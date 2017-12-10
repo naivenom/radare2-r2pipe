@@ -167,9 +167,13 @@ class open:
                         self.process.stdin.write(bytes(cmd + '\n', 'utf-8'))
                         # XXX: Use the TextIOWrapper or we can get stuck in an endless loop!
                         r = TextIOWrapper(self.process.stdout, encoding='utf8')
+                        r = getattr(self, '_process_stdout_wrapper', None)
+                        if r is None:
+                                r = TextIOWrapper(self.process.stdout, encoding='utf8')
+                                self._process_stdout_wrapper = r
                 else:
-                        self.process.stdin.write(cmd + '\n')
-                        r = self.process.stdout
+                         self.process.stdin.write(cmd + '\n')
+                         r = self.process.stdout
                 self.process.stdin.flush()
                 out = ''
                 while True:
